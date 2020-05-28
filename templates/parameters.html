@@ -1,0 +1,158 @@
+=<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+        <title>ESADE Groupeng</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                $('.butt').click(function(){
+                    $.ajax({
+                        url: "{{ url_for('background_process_test') }}",
+                        method: "POST",
+                        data: JSON.stringify({ id: $(this).attr("id"), button: $(this).attr("name") }),
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function(data) {
+                            window.location = "/parameters";
+                            console.log('success');
+                        }
+                    });
+                });
+            });
+        </script>
+        <script type="text/javascript">// <![CDATA[
+        function loading(){
+            $("#loading").show();
+            $("#content").hide();
+        }
+        // ]]></script>
+    </head>
+
+    <body>
+
+        <nav class="navbar navbar-inverse">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="">ESADE</a>
+                    <ul class="nav navbar-nav">
+                        <li><a href="../">Upload</a></li>
+                        <li class="active"><a href="">Parameters</a></li>
+                        <li><a href="../modify">Modify</a></li>
+                        <li><a href="../groups">Groups</a></li>
+                        <li><a href="../summary">Summary</a></li>
+                        <li><a href="../visualize">Visualize</a></li>
+                        {% if current_user.is_authenticated %}
+                            <li><a href="../download">Download Results</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('logout') }}">Log out</a></li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Log in</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+
+        {% if (current_user.is_authenticated) and (headers is not none) %}
+            <div class="col-sm-12">
+                <div class="col-sm-8">
+                    <div class = "row">
+                        <div class="col-sm-4">
+                            <form action="." method="POST">
+                                <div name = "nextDiv">
+                                    <input type="text" class="form-control" name="header" placeholder="Header / Value" list="headerlist" id="0" style="width:200px;"/>
+                                    <datalist id="headerlist">
+                                        {% for header in headers %}
+                                            <option>{{ header }}</option>
+                                        {% endfor %}
+                                    </datalist>
+
+                                    <select class="form-control" name= "spec_type" action="/" style="width:200px;">
+
+                                        <option value= "group_size">group size</option>
+                                        <option value= "n_sections"># sections</option>
+                                        <option value= "cluster">cluster</option>
+                                        <option value= "aggregate">aggregate</option>
+                                        <option value= "distribute">distribute</option>
+                                        <option value= "balance">balance</option>
+                                        <option value= "section_preference">section preference</option>
+                                    </select>
+                                </div>
+                                <input type="submit" value="Add a specification">
+                            </form>
+                            <div name = "nextDiv">
+                                <input type="submit" id="0" class = "butt" name="reset" value="Default specifications">
+                            </div>
+                            <div id="loading"></div>
+                            <div id="content" name = "nextDiv">
+                                <input type="submit" id="0" class = "butt" name="process" value="Engineer Groups" onclick="loading();">
+
+                            </div>
+                        </div>
+                        <div class="col-sm-8">
+                            <h5>Requirements</h5>
+                            <ul>
+                                <li>Group size: group size with +/- for allowing one more/less.</li>
+                                <li>Number of sections: amount of sections to divide students in.</li>
+                                <li>(Recommended) csv with capitalized headers ('Gender' vs 'gender')</li>
+                            </ul>
+
+                            <h5>Operators (order matters)</h5>
+                            <ul>
+                                <li>Distribute: Spread students with some attribute.</li>
+                                <li>Aggregate: Group students with some attribute.</li>
+                                <li>Cluster: Don't isolate students with some attribute.</li>
+                                <li>Balance: Equalize group averages on some numeric score.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                    <div name = "nextDiv">
+                        <a href="../" class="previous">&laquo; Previous</a>
+                        {% if status is not none %}
+                            <a href="../modify" class="next">Next &raquo;</a>
+                        {% endif %}
+                    </div>
+
+                    {% for status in statuss %}
+                        <div class="col-sm-{{ (12 / statuss|length)|int }}">
+                            <h2>Process status section {{ loop.index }}</h2>
+                            <p> {{ status|safe }} </p>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-sm-4">
+                    {% for specification in specifications %}
+
+                        <div class="row">
+                             <input type="submit" class="butt" id="{{specification.id}}" name="del" value="x">
+                            {{ specification.header }}
+                        </div>
+                        <div>
+                            <small>
+                                - {{ specification.value }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        {% endif %}
+    </body>
+</html>
