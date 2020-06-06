@@ -1,4 +1,4 @@
-=<html>
+<html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,7 +9,7 @@
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script type="text/javascript">
             $(document).ready(function() {
-                $('.butt').click(function(){
+                $('.callFlask').click(function(){
                     $.ajax({
                         url: "{{ url_for('background_process_test') }}",
                         method: "POST",
@@ -23,18 +23,59 @@
                 });
             });
         </script>
+        <script>
+            function updateParameter(header, value){
+                 $.ajax({
+                        url: "{{ url_for('parameter_update') }}",
+                        method: "POST",
+                        data: JSON.stringify({ header: header, value: value }),
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function(data) {
+                            window.location = "/parameters";
+                            console.log('success');
+                        }
+                });
+            }
+        </script>
+        <script>
+            function updatePriority(header, priority){
+                 $.ajax({
+                        url: "{{ url_for('priority_update') }}",
+                        method: "POST",
+                        data: JSON.stringify({ header: header, priority: priority }),
+                        contentType: 'application/json;charset=UTF-8',
+                        success: function(data) {
+                            window.location = "/parameters";
+                            console.log('success');
+                        }
+                });
+            }
+        </script>
         <script type="text/javascript">// <![CDATA[
-        function loading(){
-            $("#loading").show();
-            $("#content").hide();
-        }
-        // ]]></script>
+            function loading(){
+                $("#loading").show();
+                $("#content").hide();
+            }
+            // ]]>
+        </script>
+        <script>
+            function toggleLog() {
+                var x = document.getElementById("log");
+                if (x.style.display === "block") {
+                    x.style.display = "none";
+                } else {
+                    x.style.display = "block";
+                }
+            }
+        </script>
     </head>
 
     <body>
-
         <nav class="navbar navbar-inverse">
             <div class="container">
+                <div class="navbar-header">
+                    <img width="20%" height="auto" src="/static/images/esade.png" alt="ESADE" class="center">
+                </div>
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
@@ -42,10 +83,9 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="">ESADE</a>
                     <ul class="nav navbar-nav">
                         <li><a href="../">Upload</a></li>
-                        <li class="active"><a href="">Parameters</a></li>
+                        <li><a class="active" href="">Parameters</a></li>
                         <li><a href="../modify">Modify</a></li>
                         <li><a href="../groups">Groups</a></li>
                         <li><a href="../summary">Summary</a></li>
@@ -65,69 +105,135 @@
             </div>
         </nav>
 
-
         {% if (current_user.is_authenticated) and (headers is not none) %}
             <div class="col-sm-12">
-                <div class="col-sm-8">
-                    <div class = "row">
-                        <div class="col-sm-4">
-                            <form action="." method="POST">
-                                <div name = "nextDiv">
-                                    <input type="text" class="form-control" name="header" placeholder="Header / Value" list="headerlist" id="0" style="width:200px;"/>
-                                    <datalist id="headerlist">
-                                        {% for header in headers %}
-                                            <option>{{ header }}</option>
-                                        {% endfor %}
-                                    </datalist>
-
-                                    <select class="form-control" name= "spec_type" action="/" style="width:200px;">
-
-                                        <option value= "group_size">group size</option>
-                                        <option value= "n_sections"># sections</option>
-                                        <option value= "cluster">cluster</option>
-                                        <option value= "aggregate">aggregate</option>
-                                        <option value= "distribute">distribute</option>
-                                        <option value= "balance">balance</option>
-                                        <option value= "section_preference">section preference</option>
-                                    </select>
-                                </div>
-                                <input type="submit" value="Add a specification">
-                            </form>
-                            <div name = "nextDiv">
-                                <input type="submit" id="0" class = "butt" name="reset" value="Default specifications">
-                            </div>
-                            <div id="loading"></div>
-                            <div id="content" name = "nextDiv">
-                                <input type="submit" id="0" class = "butt" name="process" value="Engineer Groups" onclick="loading();">
-
-                            </div>
-                        </div>
-                        <div class="col-sm-8">
-                            <h5>Requirements</h5>
-                            <ul>
-                                <li>Group size: group size with +/- for allowing one more/less.</li>
-                                <li>Number of sections: amount of sections to divide students in.</li>
-                                <li>(Recommended) csv with capitalized headers ('Gender' vs 'gender')</li>
-                            </ul>
-
-                            <h5>Operators (order matters)</h5>
-                            <ul>
-                                <li>Distribute: Spread students with some attribute.</li>
-                                <li>Aggregate: Group students with some attribute.</li>
-                                <li>Cluster: Don't isolate students with some attribute.</li>
-                                <li>Balance: Equalize group averages on some numeric score.</li>
-                            </ul>
-                        </div>
+                <div class="col-sm-4">
+                    <div id="loading"></div>
+                    <div id="content" name = "nextDiv">
+                        <input type="submit" id="0" class = "callFlask" style = "margin-bottom:30px;margin-top:30px"
+                        name="process" value="Create Groups" onclick="loading();">
                     </div>
-
 
                     <div name = "nextDiv">
-                        <a href="../" class="previous">&laquo; Previous</a>
-                        {% if status is not none %}
-                            <a href="../modify" class="next">Next &raquo;</a>
-                        {% endif %}
+                            <a href="../" class="previous">&laquo; Previous</a>
+                            {% if status is not none %}
+                                <a href="../modify" class="next">Next &raquo;</a>
+                            {% endif %}
                     </div>
 
+                    <div style = "padding-bottom:30px">
+                        <h5>Requirements</h5>
+                        <ul>
+                            <li>Group size: group size with +/- for allowing one more/less.</li>
+                            <li>Number of sections: amount of sections to divide students in.</li>
+                        </ul>
+
+                        <h5>Operators</h5>
+                        <ul>
+                            <li>Distribute: Spread students with some attribute.</li>
+                            <li>Aggregate: Group students with some attribute.</li>
+                            <li>Cluster: Don't isolate students with some attribute.</li>
+                            <li>Balance: Equalize group averages on some numeric score.</li>
+                        </ul>
+
+                        <h5>Priority</h5>
+                        <p>Parameters will be treated in ascending order of priority. Thus, priority 1 is treated before priority 2. </p>
+                    </div>
+                    <div name = "nextDiv">
+                        <input type="submit" id="0" class = "callFlask" name="reset" value="Reset default">
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Parameter</th>
+                                <th scope="col">Value</th>
+                                <th scope="col">Update</th>
+                                <th scope="col" style="width:300px">Description</th>
+                                <th scope="col">Priority</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">Group Size</th>
+                                {% set ns = namespace(gs='none') %}
+                                {% for specification in specifications %}
+                                    {% if specification.value == 'group_size' %}
+                                        {% set ns.gs = specification.header %}
+                                    {% endif %}
+                                {% endfor %}
+                                <td>{{ ns.gs }}</td>
+                                <td>
+                                    <input onChange="updateParameter(this.value,this.name);" type="text" class="form-control"
+                                        style="width:120px" name="group_size" placeholder="Number +/-" list="gs_list" id="1"/>
+                                </td>
+                                <datalist id="gs_list">
+                                    <option>4+</option>
+                                    <option>5+</option>
+                                    <option>6+</option>
+                                    <option>7+</option>
+                                </datalist>
+                                <td>Group size plus/minus one student.</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Sections</th>
+                                {% set ns = namespace(sec='none') %}
+                                {% for specification in specifications %}
+                                    {% if specification.value == 'n_sections' %}
+                                        {% set ns.sec = specification.header %}
+                                    {% endif %}
+                                {% endfor %}
+                                <td>{{ ns.sec }}</td>
+                                <td>
+                                    <input onChange="updateParameter(this.value,this.name);" type="text" class="form-control"
+                                    style="width:120px" name="n_sections" placeholder="Number"  list="sec_list" id="2"/>
+                                </td>
+                                <datalist id="sec_list">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                </datalist>
+                                <td>Number of sections for the class.</td>
+                                <td></td>
+                            </tr>
+                            {% for header in headers %}
+                                <tr>
+                                    <th scope="row">{{ header }}</th>
+                                    {% set ns = namespace(var='none', prio = 'none') %}
+                                    {% for specification in specifications %}
+                                        {% if specification.header == header %}
+                                            {% set ns.var = specification.value %}
+                                            {% set ns.prio = specification.priority %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    <td>{{ ns.var }}</td>
+                                    <td>
+                                        <select onChange="updateParameter(this.name,this.value);" class="form-control"
+                                                style="width:120px" name="{{ header }}" placeholder="Operator" id="3">
+                                            <option>none</option>
+                                            <option {% if ns.var == 'distribute' %} selected {% endif %}>distribute</option>
+                                            <option {% if ns.var == 'balance' %} selected {% endif %}>balance</option>
+                                            <option {% if ns.var == 'aggregate' %} selected {% endif %}>aggregate</option>
+                                            <option {% if ns.var == 'cluster' %} selected {% endif %}>cluster</option>
+                                        </select>
+                                    </td>
+                                    <td>See operator description to the left.</td>
+                                    <td>
+                                        <input onChange="updatePriority(this.name,this.value);" type="text" style="width:60px"
+                                        §class="form-control" name="{{ header }}" value="{{ ns.prio }}"  id="4"/>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-sm-12">
+                    <button onclick="toggleLog()" style = "margin-bottom:20px">Toggle log message</button>
+                </div>
+                <div id="log" style = "display:none">
                     {% for status in statuss %}
                         <div class="col-sm-{{ (12 / statuss|length)|int }}">
                             <h2>Process status section {{ loop.index }}</h2>
@@ -135,24 +241,8 @@
                         </div>
                     {% endfor %}
                 </div>
-
-                <div class="col-sm-4">
-                    {% for specification in specifications %}
-
-                        <div class="row">
-                             <input type="submit" class="butt" id="{{specification.id}}" name="del" value="x">
-                            {{ specification.header }}
-                        </div>
-                        <div>
-                            <small>
-                                - {{ specification.value }}
-                            </small>
-                        </div>
-                    {% endfor %}
-                </div>
-
             </div>
-
         {% endif %}
+
     </body>
 </html>

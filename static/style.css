@@ -1,5 +1,5 @@
 body            { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;}
-a, h1, h2       { color: #377ba8; }
+
 h1, h2          { margin: 0; }
 h1              { border-bottom: 2px solid #eee; }
 h2              { font-size: 1.2em; }
@@ -42,13 +42,41 @@ a:hover {
   color: black;
 }
 
+a:link{
+    text-decoration: none;
+    color:black;
+}
+a:visited{
+    text-decoration: none;
+    color:black;
+}
+a:hover{
+    text-decoration: none;
+    color:black;
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.active{
+    background-color: #000064;
+}
+.navbar-inverse {
+     background-color: #06003E !important;
+     border-color: #06003E !important;
+}
+
+
 .previous {
   background-color: #f1f1f1;
   color: black;
 }
 
 .next {
-  background-color: #4CAF50;
+  background-color: #D6D4DF;
   color: white;
 }
 
@@ -192,8 +220,8 @@ div#loading {
 }
 
 .slider-inner:before {
-  background-color: #66bb6a;
-  color: #fff;
+  background-color: #D6D4DF;
+  color: #666;
   content: "By section";
   padding-left: .75em;
 }
@@ -207,7 +235,7 @@ div#loading {
 }
 
 .slider-circle {
-  background-color: #66bb6a;
+  background-color: #D6D4DF;
   border: 2px solid #666;
   border-radius: 20px;
   bottom: 0;
@@ -228,6 +256,9 @@ div#loading {
   background-color: #eee;
   right: 0;
 }
+
+
+
 
 
 

@@ -19,6 +19,7 @@ import pytz
 import csv
 import json
 import logging
+from difflib import SequenceMatcher
 log = logging.getLogger('log')
 
 from groupeng.process_inputs import process_csv
@@ -105,6 +106,7 @@ class Specification(db.Model):
     manager = db.relationship('User', foreign_keys=manager_id)
     header = db.Column(db.String(32))
     value  = db.Column(db.String(32))
+    priority = db.Column(db.Integer)
 
 class Statistic(db.Model):
 
@@ -222,28 +224,73 @@ def parameters():
                             .query.filter_by(manager=current_user).all(),
                             headers = cols, statuss = statuss)
 
-    # Post request: read specification
-    specification = Specification(manager = current_user,
-                            header=request.form["header"],
-                            value=request.form["spec_type"])
-    db.session.add(specification)
-    db.session.commit()
+
     return redirect(url_for('parameters'))
 
 #background process happening on the parameter page for button clicks
 @app.route('/background_process_test/', methods=['GET', 'POST'])
 def background_process_test():
     data = json.loads(request.data)
-    if data['button'] == 'del':
-        Specification.query.filter_by(id=int(data['id']))\
-        .filter_by(manager=current_user).delete()
-        db.session.commit()
     if data['button'] == 'process':
         run_groupeng()
 
     if data['button'] == 'reset':
         reset_defaults()
 
+    return redirect(url_for('parameters'))
+
+#change parameters when they are changed on the site
+@app.route('/parameter_update/', methods=['GET', 'POST'])
+def parameter_update():
+
+    data = json.loads(request.data)
+    value = str(data['value'])
+    header = str(data['header'])
+    try:
+        priority = Specification.query.filter_by(header=header)\
+                .filter_by(manager=current_user).first().priority
+    except:
+        priority = 5
+
+    if value == 'group_size':
+        if (header[-1] in ['+','-']) and (header[:-1].isdigit()):
+            Specification.query.filter_by(value='group_size')\
+                .filter_by(manager=current_user)\
+                .update(dict(header = str(int(header[:-1])) + header[-1]))
+
+    elif value == 'n_sections':
+        if (header.isdigit()):
+            Specification.query.filter_by(value='n_sections')\
+                .filter_by(manager=current_user)\
+                .update(dict(header = str(int(header))))
+
+    else:
+        Specification.query.filter_by(header=header)\
+            .filter_by(manager=current_user).delete()
+        if value != 'none':
+            # Post request: read specification
+            specification = Specification(manager = current_user,
+                                    header=header,
+                                    value=value,
+                                    priority = priority)
+            db.session.add(specification)
+    db.session.commit()
+
+    return redirect(url_for('parameters'))
+
+#change priority of parameters when they are changed on the site
+@app.route('/priority_update/', methods=['GET', 'POST'])
+def priority_update():
+    try:
+        data = json.loads(request.data)
+        header = str(data['header'])
+        priority = str(int(data['priority']))
+
+        Specification.query.filter_by(header=header)\
+                .filter_by(manager=current_user).update(dict(priority=priority))
+        db.session.commit()
+    except:
+        pass
     return redirect(url_for('parameters'))
 
 #############################
@@ -428,6 +475,11 @@ def upload_csv():
     db.session.add_all(students)
     db.session.commit()
 
+    #Delete old specifications etc.
+    Statistic.query.filter_by(manager=current_user).delete()
+    GroupedStudents.query.filter_by(manager=current_user).delete()
+    reset_defaults()
+
 def run_groupeng():
     Statistic.query.filter_by(manager=current_user).delete()
     GroupedStudents.query.filter_by(manager=current_user).delete()
@@ -503,7 +555,6 @@ def run_groupeng():
 
 def reset_defaults():
     Specification.query.filter_by(manager=current_user).delete()
-
     db.session.commit()
     db.session.add(Specification(manager = current_user,
                         header='6+',
@@ -513,18 +564,40 @@ def reset_defaults():
                         header='2',
                         value='n_sections'))
     db.session.commit()
-    distribute_values = ["Gender","Nationality","Academic Background"]
-    balance_values = ["GMAT"]
 
-    for d in distribute_values:
+    properties = pd.read_sql(
+            db.session.query(Classroom).\
+            filter(Classroom.manager == current_user).statement,
+            db.session.bind).key.unique()
+
+    search_distribute = ["gender","nationality","academicbackground", "programme","past group"]
+    search_balance = ["gmat"]
+
+    count = 1
+    for p in properties:
+        for d in search_distribute:
+            if SequenceMatcher(None, p.lower(), d.lower()).ratio() >0.75:
+                db.session.add(Specification(manager = current_user,
+                        header=p,
+                        value='distribute',
+                        priority=str(count)))
+                db.session.commit()
+                count = count + 1
+                continue
+        for b in search_balance:
+            if SequenceMatcher(None, p.lower(), b.lower()).ratio() >0.75:
+                db.session.add(Specification(manager = current_user,
+                        header=p,
+                        value='balance',
+                        priority='30'))
+                db.session.commit()
+                count = count + 1
+                continue
+    if count == 0:
         db.session.add(Specification(manager = current_user,
-                        header=d,
-                        value='distribute'))
-        db.session.commit()
-    for b in balance_values:
-        db.session.add(Specification(manager = current_user,
-                        header=b,
-                        value='balance'))
+                        header=properties[0],
+                        value='distribute',
+                        priority='5'))
         db.session.commit()
 
 def switch_ids(from_id, to_id):

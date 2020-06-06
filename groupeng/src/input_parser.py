@@ -39,10 +39,12 @@ def read_input(current_user, studentIds):
 
     header_specs = flask_app.Specification.query.filter_by(manager=current_user).\
             filter(flask_app.Specification.value !='group_size').\
-            filter(flask_app.Specification.value !='n_sections').all()
+            filter(flask_app.Specification.value !='n_sections').\
+            order_by(flask_app.Specification.priority).all()
 
     rules = []
     for h in header_specs:
+        log.debug(h.header)
         if h.value == 'section_preference':
             if studentIds is None:
                 rule = {}

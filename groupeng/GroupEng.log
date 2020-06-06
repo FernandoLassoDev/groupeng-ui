@@ -1,0 +1,198 @@
+run controller
+allocate sections
+Read specifications
+Gender
+Nationality
+Academic Background
+Programme
+Pre-programme
+Past Group 1
+Past Group 2
+Past Group 3
+Past Group 4
+Past Group 5
+GMAT
+read class list
+Allowing 5 tries to get rules to work
+Using Rules: [{'attribute': u'Gender', 'name': 'distribute'}, {'attribute': u'Nationality', 'name': 'distribute'}, {'attribute': u'Academic Background', 'name': 'distribute'}, {'attribute': u'Programme', 'name': 'distribute'}, {'attribute': u'Pre-programme', 'name': 'distribute'}, {'attribute': u'Past Group 1', 'name': 'distribute'}, {'attribute': u'Past Group 2', 'name': 'distribute'}, {'attribute': u'Past Group 3', 'name': 'distribute'}, {'attribute': u'Past Group 4', 'name': 'distribute'}, {'attribute': u'Past Group 5', 'name': 'distribute'}, {'attribute': u'GMAT', 'name': u'balance'}]
+Initialized Course
+Using: 2 groups of size 52 for 104 students, uneven_size: None
+Made rules
+Made initial groups
+Try 0/5 retrying for rule <Distribute Gender [u'M', u'F']>
+Try 0/5 retrying for rule <Distribute Nationality [u'US', u'CH', u'GE', u'DE', u'NL', u'RU', u'IN', u'ES', u'IT']>
+Try 0/5 retrying for rule <Distribute Academic Background [u'Engineering', u'Management', u'Economics', u'Mathematics', u'History']>
+Try 0/5 retrying for rule <Distribute Programme [u'CEMS', u'BBA', u'DoubleDegree', u'Other']>
+Try 0/5 retrying for rule <Distribute Pre-programme [u'BIP', u'None', u'PBA', u'PPF']>
+Try 0/5 retrying for rule <Distribute Past Group 1 [15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]>
+Try 0/5 retrying for rule <Distribute Past Group 2 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 3 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 4 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 5 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+applied rules
+removed phantoms
+allocate groups
+Read specifications
+Gender
+Nationality
+Academic Background
+Programme
+Pre-programme
+Past Group 1
+Past Group 2
+Past Group 3
+Past Group 4
+Past Group 5
+GMAT
+read class list
+Allowing 5 tries to get rules to work
+Using Rules: [{'attribute': u'Gender', 'name': u'distribute'}, {'attribute': u'Nationality', 'name': u'distribute'}, {'attribute': u'Academic Background', 'name': u'distribute'}, {'attribute': u'Programme', 'name': u'distribute'}, {'attribute': u'Pre-programme', 'name': u'distribute'}, {'attribute': u'Past Group 1', 'name': u'distribute'}, {'attribute': u'Past Group 2', 'name': u'distribute'}, {'attribute': u'Past Group 3', 'name': u'distribute'}, {'attribute': u'Past Group 4', 'name': u'distribute'}, {'attribute': u'Past Group 5', 'name': u'distribute'}, {'attribute': u'GMAT', 'name': u'balance'}]
+Initialized Course
+Using: 8 groups of size 7 for 56 students, uneven_size: +
+Made rules
+Made initial groups
+Try 0/5 retrying for rule <Distribute Nationality [u'CH', u'DE', u'GE', u'IN', u'NL', u'RU', u'ES', u'IT']>
+Try 0/5 retrying for rule <Distribute Academic Background [u'Economics', u'Engineering', u'Management', u'History', u'Mathematics']>
+Try 0/5 retrying for rule <Distribute Programme [u'BBA', u'CEMS', u'DoubleDegree', u'Other']>
+Try 0/5 retrying for rule <Distribute Pre-programme [u'None', u'PBA', u'BIP', u'PPF']>
+Try 0/5 retrying for rule <Distribute Past Group 1 [7, 3, 12, 15, 17, 1, 2, 6, 9, 10, 11, 13, 18, 4, 5, 8, 14]>
+Try 0/5 retrying for rule <Distribute Past Group 2 [6, 3, 9, 18, 2, 4, 5, 7, 8, 10, 11, 12, 13, 14, 16, 17, 15, 1]>
+Try 0/5 retrying for rule <Distribute Past Group 3 [6, 3, 9, 18, 2, 4, 5, 7, 8, 10, 11, 12, 13, 14, 16, 17, 15, 1]>
+Try 0/5 retrying for rule <Distribute Past Group 4 [6, 3, 9, 18, 2, 4, 5, 7, 8, 10, 11, 12, 13, 14, 16, 17, 15, 1]>
+Try 0/5 retrying for rule <Distribute Past Group 5 [6, 3, 9, 18, 2, 4, 5, 7, 8, 10, 11, 12, 13, 14, 16, 17, 15, 1]>
+Try 0/5 retrying for rule <Balance : 672 : tol 22.6218920517>
+applied rules
+removed phantoms
+Read specifications
+Gender
+Nationality
+Academic Background
+Programme
+Pre-programme
+Past Group 1
+Past Group 2
+Past Group 3
+Past Group 4
+Past Group 5
+GMAT
+read class list
+Allowing 5 tries to get rules to work
+Using Rules: [{'attribute': u'Gender', 'name': u'distribute'}, {'attribute': u'Nationality', 'name': u'distribute'}, {'attribute': u'Academic Background', 'name': u'distribute'}, {'attribute': u'Programme', 'name': u'distribute'}, {'attribute': u'Pre-programme', 'name': u'distribute'}, {'attribute': u'Past Group 1', 'name': u'distribute'}, {'attribute': u'Past Group 2', 'name': u'distribute'}, {'attribute': u'Past Group 3', 'name': u'distribute'}, {'attribute': u'Past Group 4', 'name': u'distribute'}, {'attribute': u'Past Group 5', 'name': u'distribute'}, {'attribute': u'GMAT', 'name': u'balance'}]
+Initialized Course
+Using: 8 groups of size 7 for 56 students, uneven_size: +
+Made rules
+Made initial groups
+Try 0/5 retrying for rule <Distribute Nationality [u'CH', u'RU', u'GE', u'US', u'DE', u'ES', u'NL', u'IN', u'IT']>
+Try 0/5 retrying for rule <Distribute Academic Background [u'Engineering', u'Management', u'Mathematics', u'Economics', u'History']>
+Try 0/5 retrying for rule <Distribute Pre-programme [u'BIP', u'PPF', u'PBA', u'None']>
+Try 0/5 retrying for rule <Distribute Past Group 1 [5, 8, 14, 4, 18, 1, 2, 6, 9, 10, 11, 13, 15, 17, 3, 12, 7, 16]>
+Try 0/5 retrying for rule <Distribute Past Group 2 [1, 15, 16, 17, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 14, 18, 9, 6]>
+Try 0/5 retrying for rule <Distribute Past Group 3 [1, 15, 16, 17, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 14, 18, 9, 6]>
+Try 0/5 retrying for rule <Distribute Past Group 4 [1, 15, 16, 17, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 14, 18, 9, 6]>
+Try 0/5 retrying for rule <Distribute Past Group 5 [1, 15, 16, 17, 2, 3, 4, 5, 7, 8, 10, 11, 12, 13, 14, 18, 9, 6]>
+Try 0/5 retrying for rule <Balance : 673 : tol 21.1246301743>
+applied rules
+removed phantoms
+ran groupeng
+GroupEng Ran Correctly but not all rules could be met
+
+run controller
+allocate sections
+Read specifications
+Nationality
+Academic Background
+Programme
+Pre-programme
+Past Group 1
+Past Group 2
+Past Group 3
+Past Group 4
+Past Group 5
+GMAT
+Gender
+read class list
+Allowing 5 tries to get rules to work
+Using Rules: [{'attribute': u'Nationality', 'name': 'distribute'}, {'attribute': u'Academic Background', 'name': 'distribute'}, {'attribute': u'Programme', 'name': 'distribute'}, {'attribute': u'Pre-programme', 'name': 'distribute'}, {'attribute': u'Past Group 1', 'name': 'distribute'}, {'attribute': u'Past Group 2', 'name': 'distribute'}, {'attribute': u'Past Group 3', 'name': 'distribute'}, {'attribute': u'Past Group 4', 'name': 'distribute'}, {'attribute': u'Past Group 5', 'name': 'distribute'}, {'attribute': u'GMAT', 'name': u'balance'}, {'attribute': u'Gender', 'name': 'distribute'}]
+Initialized Course
+Using: 2 groups of size 52 for 104 students, uneven_size: None
+Made rules
+Made initial groups
+Try 0/5 retrying for rule <Distribute Nationality [u'US', u'CH', u'GE', u'DE', u'NL', u'RU', u'IN', u'ES', u'IT']>
+Try 0/5 retrying for rule <Distribute Academic Background [u'Engineering', u'Management', u'Economics', u'Mathematics', u'History']>
+Try 0/5 retrying for rule <Distribute Pre-programme [u'BIP', u'None', u'PBA', u'PPF']>
+Try 0/5 retrying for rule <Distribute Past Group 1 [15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]>
+Try 0/5 retrying for rule <Distribute Past Group 2 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 3 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 4 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 5 [3, 16, 17, 18, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]>
+Try 0/5 retrying for rule <Distribute Gender [u'M', u'F']>
+applied rules
+removed phantoms
+allocate groups
+Read specifications
+Nationality
+Academic Background
+Programme
+Pre-programme
+Past Group 1
+Past Group 2
+Past Group 3
+Past Group 4
+Past Group 5
+GMAT
+Gender
+read class list
+Allowing 5 tries to get rules to work
+Using Rules: [{'attribute': u'Nationality', 'name': u'distribute'}, {'attribute': u'Academic Background', 'name': u'distribute'}, {'attribute': u'Programme', 'name': u'distribute'}, {'attribute': u'Pre-programme', 'name': u'distribute'}, {'attribute': u'Past Group 1', 'name': u'distribute'}, {'attribute': u'Past Group 2', 'name': u'distribute'}, {'attribute': u'Past Group 3', 'name': u'distribute'}, {'attribute': u'Past Group 4', 'name': u'distribute'}, {'attribute': u'Past Group 5', 'name': u'distribute'}, {'attribute': u'GMAT', 'name': u'balance'}, {'attribute': u'Gender', 'name': u'distribute'}]
+Initialized Course
+Using: 8 groups of size 7 for 56 students, uneven_size: +
+Made rules
+Made initial groups
+Try 0/5 retrying for rule <Distribute Nationality [u'US', u'CH', u'GE', u'DE', u'IN', u'RU', u'ES', u'IT', u'NL']>
+Try 0/5 retrying for rule <Distribute Academic Background [u'Engineering', u'Management', u'Mathematics', u'Economics', u'History']>
+Try 0/5 retrying for rule <Distribute Programme [u'BBA', u'CEMS', u'DoubleDegree', u'Other']>
+Try 0/5 retrying for rule <Distribute Pre-programme [u'BIP', u'None', u'PBA', u'PPF']>
+Try 0/5 retrying for rule <Distribute Past Group 1 [13, 14, 1, 2, 7, 10, 12, 18, 6, 9, 16, 17, 3, 4, 5, 11, 8, 15]>
+Try 0/5 retrying for rule <Distribute Past Group 2 [4, 2, 9, 12, 16, 1, 7, 11, 13, 15, 18, 3, 5, 10, 14, 17, 6]>
+Try 0/5 retrying for rule <Distribute Past Group 3 [4, 2, 9, 12, 16, 1, 7, 11, 13, 15, 18, 3, 5, 10, 14, 17, 6]>
+Try 0/5 retrying for rule <Distribute Past Group 4 [4, 2, 9, 12, 16, 1, 7, 11, 13, 15, 18, 3, 5, 10, 14, 17, 6]>
+Try 0/5 retrying for rule <Distribute Past Group 5 [4, 2, 9, 12, 16, 1, 7, 11, 13, 15, 18, 3, 5, 10, 14, 17, 6]>
+Try 0/5 retrying for rule <Balance : 678 : tol 20.7966343431>
+Try 0/5 retrying for rule <Distribute Gender [u'M', u'F']>
+applied rules
+removed phantoms
+Read specifications
+Nationality
+Academic Background
+Programme
+Pre-programme
+Past Group 1
+Past Group 2
+Past Group 3
+Past Group 4
+Past Group 5
+GMAT
+Gender
+read class list
+Allowing 5 tries to get rules to work
+Using Rules: [{'attribute': u'Nationality', 'name': u'distribute'}, {'attribute': u'Academic Background', 'name': u'distribute'}, {'attribute': u'Programme', 'name': u'distribute'}, {'attribute': u'Pre-programme', 'name': u'distribute'}, {'attribute': u'Past Group 1', 'name': u'distribute'}, {'attribute': u'Past Group 2', 'name': u'distribute'}, {'attribute': u'Past Group 3', 'name': u'distribute'}, {'attribute': u'Past Group 4', 'name': u'distribute'}, {'attribute': u'Past Group 5', 'name': u'distribute'}, {'attribute': u'GMAT', 'name': u'balance'}, {'attribute': u'Gender', 'name': u'distribute'}]
+Initialized Course
+Using: 8 groups of size 7 for 56 students, uneven_size: +
+Made rules
+Made initial groups
+Try 0/5 retrying for rule <Distribute Nationality [u'NL', u'US', u'CH', u'DE', u'RU', u'GE', u'ES', u'IN', u'IT']>
+Try 0/5 retrying for rule <Distribute Academic Background [u'Economics', u'Engineering', u'Management', u'History', u'Mathematics']>
+Try 0/5 retrying for rule <Distribute Programme [u'CEMS', u'BBA', u'DoubleDegree', u'Other']>
+Try 0/5 retrying for rule <Distribute Pre-programme [u'BIP', u'None', u'PBA', u'PPF']>
+Try 0/5 retrying for rule <Distribute Past Group 1 [8, 3, 4, 5, 11, 16, 17, 6, 9, 18, 1, 2, 7, 10, 12, 13, 14]>
+Try 0/5 retrying for rule <Distribute Past Group 2 [3, 6, 17, 5, 10, 14, 18, 1, 7, 11, 13, 15, 16, 2, 9, 12, 4, 8]>
+Try 0/5 retrying for rule <Distribute Past Group 3 [3, 6, 17, 5, 10, 14, 18, 1, 7, 11, 13, 15, 16, 2, 9, 12, 4, 8]>
+Try 0/5 retrying for rule <Distribute Past Group 4 [3, 6, 17, 5, 10, 14, 18, 1, 7, 11, 13, 15, 16, 2, 9, 12, 4, 8]>
+Try 0/5 retrying for rule <Distribute Past Group 5 [3, 6, 17, 5, 10, 14, 18, 1, 7, 11, 13, 15, 16, 2, 9, 12, 4, 8]>
+Try 0/5 retrying for rule <Balance : 667 : tol 22.5721066806>
+Try 0/5 retrying for rule <Distribute Gender [u'M', u'F']>
+applied rules
+removed phantoms
+ran groupeng
+GroupEng Ran Correctly but not all rules could be met
+
