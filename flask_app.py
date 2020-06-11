@@ -14,6 +14,7 @@ from flask_migrate import Migrate
 from collections import OrderedDict
 import matplotlib
 matplotlib.use("Agg")
+import os.path
 from datetime import datetime
 import pytz
 import csv
@@ -188,8 +189,11 @@ def index():
     # Post request: Upload file into database
     try:
         upload_csv()
-    except Exception as e:
-        log.debug(str(e))
+    except:
+        try:
+            upload_csv(delimiter =";")
+        except Exception as e:
+            log.debug(str(e))
     return redirect(url_for('index'))
 
 #######################
@@ -302,34 +306,36 @@ def modify():
     # Empty parameters if no data available or user not logged in
     if not current_user.is_authenticated or\
       (request.method == "GET" and db.session.query(Classroom.id).\
-      filter(Classroom.manager == current_user).first() is None):
-        return render_template("modify.html", groups = None)
+      filter(Classroom.manager == current_user).first() is None) or\
+      (db.session.query(GroupedStudents).filter(\
+        GroupedStudents.manager == current_user).first() is None):
+        return render_template("modify.html", groups = None, message = None)
+
+    # Post request to switch 2 students or groups
+    if request.method == "POST":
+        message = switch_ids(request.form["from"], request.form["to"])
+
+    student_query = GroupedStudents.query\
+                    .filter_by(manager = current_user).all()
+    all_students = []
+    for sq in student_query:
+        all_students.append([sq.studentID,int(sq.group),int(sq.section)])
+
+    res = OrderedDict()
+    for i, g, s in all_students:
+        k = str(s) + ":" + str(g)
+        if k in res: res[k].append(i)
+        else: res[k] = [i]
+
+    [{'group':k, 'studentID':v} for k,v in res.items()]
+
+    res = OrderedDict(sorted(res.items()))
 
     # Display page with table containing grouping info
     if request.method == "GET":
+        message = None
 
-        student_query = GroupedStudents.query\
-                        .filter_by(manager = current_user).all()
-        all_students = []
-        for sq in student_query:
-            all_students.append([sq.studentID,int(sq.group),int(sq.section)])
-
-        res = OrderedDict()
-        for i, g, s in all_students:
-            k = str(s) + ":" + str(g)
-            if k in res: res[k].append(i)
-            else: res[k] = [i]
-
-        [{'group':k, 'studentID':v} for k,v in res.items()]
-
-        res = OrderedDict(sorted(res.items()))
-        return render_template("modify.html", groups = res)
-
-    # Post request to switch 2 students or groups
-
-    switch_ids(request.form["from"], request.form["to"])
-
-    return redirect(url_for('modify'))#response
+    return render_template("modify.html", groups = res, message = message)
 
 #########################
 # DISPLAY GROUPS PAGE   #
@@ -342,7 +348,8 @@ def groups():
     if not current_user.is_authenticated or\
       (request.method == "GET" and db.session.query(Classroom.id).\
       filter(Classroom.manager == current_user).first() is None):
-        return render_template("groups.html",headers = None)
+        return render_template("groups.html",by_section = False,
+                            tables = None)
 
     # Show summary tables
     if request.method == "GET":
@@ -364,7 +371,8 @@ def summary():
     if not current_user.is_authenticated or\
       (request.method == "GET" and db.session.query(Classroom.id).\
       filter(Classroom.manager == current_user).first() is None):
-        return render_template("summary.html",headers = None)
+        return render_template("summary.html", by_section = False,
+                            tables = None)
 
     # Show summary tables
     if request.method == "GET":
@@ -389,24 +397,25 @@ def visualize():
     # Empty parameters if no data available or user not logged in
     if not current_user.is_authenticated or\
       (request.method == "GET" and db.session.query(Classroom.id).\
-      filter(Classroom.manager == current_user).first() is None):
+      filter(Classroom.manager == current_user).first() is None) or\
+      (db.session.query(GroupedStudents).filter(\
+        GroupedStudents.manager == current_user).first() is None):
         return render_template("visualize.html",headers = None)
 
-    # Display visualization page using csv headers as possible inputs
-    if request.method == "GET":
-
-        properties = pd.read_sql(
+    properties = pd.read_sql(
             db.session.query(Classroom).\
             filter(Classroom.manager == current_user).statement,
             db.session.bind)
+    cols = properties.key.unique()
+    # Display visualization page using csv headers as possible inputs
+    if request.method == "GET":
+        return render_template("visualize.html", headers = cols, exists = False,
+                                manager_id = current_user.id, selected = None)
 
-        cols = properties.key.unique()
-        return render_template("visualize.html",
-                            headers = cols, manager_id = current_user.id)
+    selected = visualize_user_plot()
 
-    visualize_user_plot()
-
-    return redirect(url_for('visualize'))
+    return render_template("visualize.html", headers = cols, exists = True,
+                            manager_id = current_user.id, selected = selected)
 
 ####################
 # DOWNLOAD BUTTON #
@@ -438,26 +447,27 @@ def unique_maintain_order(seq):
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
 
-def upload_csv():
+def upload_csv(delimiter = ","):
 
-    student_data = request.files["students"]
+    file= request.files["students"]
+    file.seek(0)
+    reader = csv.reader(file, delimiter = delimiter)
 
-    inf = csv.reader(student_data)
-
-    try:
-        header_line = inf.__next__()
-    except AttributeError:
-        header_line = inf.next()
+    header_line = reader.next()
 
     headers = [h.strip() for h in header_line if h.strip() != '']
     headers.pop(0)
+
+    if len(headers)<2:
+        raise ValueError('Wrong csv format. Trying with different delimiter.')
+
     if db.session.query(Classroom.id).\
       filter(Classroom.manager == current_user).first() is not None:
         log.debug('delete old csv')
         Classroom.query.filter_by(manager=current_user).delete()
 
     students = []
-    for line,s in enumerate(inf):
+    for line,s in enumerate(reader):
         if set(s).issubset(set(['', ' ', None])):
             # skip blank lines
             pass
@@ -571,7 +581,7 @@ def reset_defaults():
             db.session.bind).key.unique()
 
     search_distribute = ["gender","nationality","academicbackground", "programme","past group"]
-    search_balance = ["gmat"]
+    search_balance = ["gmat","age"]
 
     count = 1
     for p in properties:
@@ -601,6 +611,7 @@ def reset_defaults():
         db.session.commit()
 
 def switch_ids(from_id, to_id):
+
      # Identify group with split
     if len(from_id.split(":"))>1:
         from_section   = from_id.split(":")[0]
@@ -611,6 +622,8 @@ def switch_ids(from_id, to_id):
            filter_by(group = from_group).filter_by(section = from_section).all()
         tos = GroupedStudents.query.filter_by(manager = current_user).\
            filter_by(group = to_group).filter_by(section = to_section).all()
+        if (len(froms) == 0) or (len(tos) == 0):
+            return "Invalid input"
         for f in froms:
             f.group = to_group
             f.section = to_section
@@ -620,16 +633,23 @@ def switch_ids(from_id, to_id):
             t.group = from_group
             t.section = from_section
             db.session.commit()
-
+        message = "Switched group " + str(from_id) + " and " + str(to_id)
     else:
+
         from_student = GroupedStudents.query.filter_by(manager = current_user).\
            filter_by(studentID = from_id).first()
         to_student = GroupedStudents.query.filter_by(manager = current_user).\
            filter_by(studentID = to_id).first()
+        if (from_student is None) or (to_student is None):
+            return "Invalid input"
         from_student.studentID = to_id
         db.session.commit()
         to_student.studentID = from_id
         db.session.commit()
+        message = "Switched student " + str(from_id) + " and " + str(to_id)
+
+
+    return message
 
 def create_tables(by_section = False, summary = False):
     students = pd.read_sql(
@@ -643,7 +663,8 @@ def create_tables(by_section = False, summary = False):
             db.session.query(GroupedStudents).\
             filter(GroupedStudents.manager == current_user).statement,
             db.session.bind)
-
+    if len(groups)<1:
+        return None
     students = students.merge(groups, on='studentID')
 
     sectionCol = students.columns[-2]
@@ -663,29 +684,40 @@ def create_tables(by_section = False, summary = False):
     tables = []
     group_by = sectionCol if by_section else 'sec:group'
     if summary:
-        stylestr = "* {font-family: \"Lucida Grande\", Times, serif;} table, "+\
-                    "td, tr, th {text-align: center;border-color: black;"+\
+        stylestr = "table, td, tr, th{text-align: center;border-color: black;"+\
                     "border-width:thin;border-style:solid; border-width: 2px;"+\
-                    "border-collapse:collapse}"
+                    "padding: 5px; border-collapse:collapse}"
         for c in columns:
             table = students.loc[:,[group_by,c]].copy()
             if (spec[spec.header == c].value.iloc[0] == 'balance'):
-                table[c] = table[c].astype(float)
+                table[c] = pd.to_numeric(table[c], errors='coerce')
 
                 grouped = pd.pivot_table(table,index=[group_by], values = [c],
                    aggfunc=[np.mean,np.std], margins=True,
-                           dropna=True, fill_value=0).transpose()
-                html = grouped.style.background_gradient(
-                                            axis = 1,cmap='Blues').render()
+                           dropna=True, fill_value=0).round(0)
+                grouped.columns = grouped.columns.droplevel(0)
+                grouped.columns.name = None
+                grouped = grouped.reset_index()
+                grouped.columns = [c, "mean", "std"]
+
+                html = grouped.style.background_gradient(axis = 0,cmap='Blues')\
+                                    .hide_index().render()
+
 
             else:
                 grouped = pd.pivot_table(table,index=[c],
                    columns=[group_by],
                    aggfunc=len, margins=True,
                            dropna=True, fill_value=0)
-                grouped = grouped.div( grouped.iloc[-1,:], axis=1 ).round(2)
+                grouped = grouped.div( grouped.iloc[-1,:], axis=1 ).round(2)*100
                 grouped.drop(grouped.tail(1).index,inplace=True)
-                html = grouped.style.background_gradient(cmap='Blues').render()
+                grouped = grouped.reset_index().rename_axis(None, axis=1)\
+                                .set_index(c).transpose()
+
+                html = grouped.style.background_gradient(
+                    axis = 0,cmap='Blues').render()
+                html = html.replace("</td>","%</td>")
+
             html = html[0:27] + stylestr + html[27:len(html)]
             tables.append(("",html))
 
@@ -708,6 +740,7 @@ def create_tables(by_section = False, summary = False):
 
 def visualize_user_plot():
 
+    selected = request.form["header"]
     students = pd.read_sql(
             db.session.query(Classroom).\
             filter(Classroom.manager == current_user).statement,
@@ -716,9 +749,8 @@ def visualize_user_plot():
     students = students.pivot(index='studentID', columns='key', values='value')
     # Post request to visualize a column
     groups = pd.read_sql(
-        db.session.query(GroupedStudents)\
-                    .filter(GroupedStudents.manager == current_user).statement,
-        db.session.bind)
+        db.session.query(GroupedStudents).filter(
+            GroupedStudents.manager == current_user).statement, db.session.bind)
 
     identifier = 'studentID'
 
@@ -728,36 +760,32 @@ def visualize_user_plot():
 
     flag = False
     spec = Specification.query.filter_by(manager = current_user)\
-                        .filter_by(header = request.form["header"]).first()
+                        .filter_by(header = selected).first()
     if spec is not None:
         flag = spec.value == 'balance'
 
     if  flag:
         kind = 'hist'
-        students[request.form["header"]] = \
-                                pd.to_numeric(students[request.form["header"]])
-        groupplot = students[[request.form["header"],'group','section']].\
+        students[selected] = pd.to_numeric(students[selected])
+        groupplot = students[[selected,'group','section']].\
                                     groupby(['group','section']).mean()
-        sectionplot = students[[request.form["header"],'section']].\
+        sectionplot = students[[selected,'section']].\
                                     groupby('section').mean()
 
     else:
         kind = 'bar'
-        groupplot = students[[request.form["header"],'group','section']].\
+        groupplot = students[[selected,'group','section']].\
                       pivot_table(index=['group','section'],
-                      columns=request.form["header"], aggfunc=len, fill_value=0)
-        sectionplot = students[[request.form["header"],'section']].\
+                      columns=selected, aggfunc=len, fill_value=0)
+        sectionplot = students[[selected,'section']].\
                       pivot_table(index='section',
-                      columns=request.form["header"], aggfunc=len, fill_value=0)
+                      columns=selected, aggfunc=len, fill_value=0)
 
     fig = groupplot.plot(kind=kind).get_figure()
-
     fig.savefig('../static/images/group_plot'+ str(current_user.id) + '.png')
-
     fig = sectionplot.plot(kind=kind).get_figure()
-
     fig.savefig('../static/images/section_plot'+ str(current_user.id) + '.png')
-
+    return selected
 @app.after_request
 def add_header(response):
     # response.cache_control.no_store = True

@@ -47,7 +47,9 @@ def numberize(n):
     '''
     if isinstance(n, (int, float)):
         return n
-
+    # except numbers that start with 0:
+    if n[0] == '0':
+        return n
     try:
         try:
             return int(n)
@@ -57,4 +59,5 @@ def numberize(n):
             except ValueError:
                 return n
     except TypeError:
+
         return n

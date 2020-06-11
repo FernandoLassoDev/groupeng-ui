@@ -43,25 +43,45 @@
             </div>
         </nav>
 
-        {% if (current_user.is_authenticated) and (headers is not none) %}
         <div class="col-sm-12">
-            <div name = "nextDiv">
-                <form action="." method="POST">
-                    <input type="text" class="form-control" name="header" placeholder="Plot by" list="headerlist" id="0" style="width:200px;"/>
-                    <datalist id="headerlist">
-                        {% for header in headers %}
-                            <option>{{ header }}</option>
-                        {% endfor %}
-                    </datalist>
-                    <p><input type="submit" name = "render" value="Render plot" /></p>
-                </form>
-            </div>
+        {% if (current_user.is_authenticated) and (headers is not none) %}
+            <div class="row">
+                <div class="col-sm-3">
+                    <div name = "nextDiv">
+                        <form action="." method="POST">
+                            <select class="form-control" name="header" placeholder="Plot by" id="0" style="width:200px;">
+                                {% for header in headers %}
+                                    <option {% if header == selected %} selected {% endif %}>{{ header }}</option>
+                                {% endfor %}
+                            <select/>
+                            <p><input type="submit" name = "render" value="Render plot" /></p>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <h4>Visualization of variables by group and section</h4>
+                    <p>The category frequency is shown per group on the left and per section on the right.</p>
+                    <p>The charts are displayed as histograms for balanced variables and bar charts for all others.</p>
+                </div>
+            </div.
 
-            <div><a href="../summary/" class="previous">&laquo; Previous</a></div>
-
-            <img src="/static/images/group_plot{{ manager_id }}.png" alt="Chart" >
-            <img src="/static/images/section_plot{{ manager_id }}.png" alt="Chart" >
-        </div>
+        {% else %}
+            <div><p>Need to upload csv and click Create Groups in parameters tab.</p></div>
         {% endif %}
+            <div class="row">
+                <div class="col-sm-3">
+                    <div><a href="../summary/" class="previous">&laquo; Previous</a></div>
+                </div>
+            </div>
+        {% if (current_user.is_authenticated) and (headers is not none) %}
+
+            {% if exists %}
+                <img src="/static/images/group_plot{{ manager_id }}.png" alt="Chart" >
+                <img src="/static/images/section_plot{{ manager_id }}.png" alt="Chart" >
+            {% else %}
+                <p>Choose variable to visualize.</p>
+            {% endif %}
+        {% endif %}
+        </div>
     </body>
 </html>

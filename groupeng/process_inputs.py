@@ -24,6 +24,7 @@ def process_csv(current_user):
         res = {}
 
         for stud in sections:
+            log.debug(stud)
             sec = sections[stud]
             if sec in res: res[sec].append(str(stud))
             else: res[sec] = [str(stud)]
@@ -31,6 +32,7 @@ def process_csv(current_user):
         [{'section':sec, 'studentID':stud} for stud,sec in res.items()]
 
         log.debug('allocate groups')
+
         for count,sec in enumerate(res):
              status_sec, stats_sec, students_sec = controller.run(current_user, res[sec])
              status = status and status_sec
@@ -39,13 +41,14 @@ def process_csv(current_user):
 
         log.debug('ran groupeng')
 
+        if status:
+            log.debug("GroupEng Run Succesful\n")
+        else:
+            log.debug("GroupEng Ran Correctly but not all rules could be met\n")
     except Exception as e:
         log.debug(str(e))
 
-    if status:
-        log.debug("GroupEng Run Succesful\n")
-    else:
-        log.debug("GroupEng Ran Correctly but not all rules could be met\n")
+
     return stats,students
 
 

@@ -42,7 +42,7 @@
         </nav>
         {% if current_user.is_authenticated %}
             <div class="col-sm-12">
-                <p>Upload class CSV</p>
+                <h4>Upload class CSV</h4>
                 <form method="post" action="." enctype="multipart/form-data">
                     <p><input type="file" name="students" /></p>
                     <p><input type="submit" name = "process" value="Process the file" /></p>
@@ -54,6 +54,12 @@
                     <div>{{ student_csv|safe }} </div>
                 {% endif %}
             </div>
+        {% else %}
+             <div class="col-sm-12">
+                 <p>Need to log in.</p>
+                 <p>In case of trouble, email FernandoMLassoP@gmail.com.</p>
+            </div>
         {% endif %}
+
     </body>
 </html>

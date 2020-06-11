@@ -43,25 +43,44 @@
             </div>
         </nav>
 
-        {% if (current_user.is_authenticated) and (groups is not none) %}
-            <div class="col-sm-12">
-                <div style="width:200px;" name = "nextDiv">
-                    <form action="." method="POST">
-                        <div name = "nextDiv">
-                            <input type="text" class="form-control" name="from" placeholder="ID / Group:Section" />
-                            <input type="text" class="form-control" name="to" placeholder="ID / Group:Section" />
-                        </div>
-                        <div name = "nextDiv">
-                            <input type="submit" value="Switch">
-                        </div>
-                    </form>
-                </div>
 
+            <div class="col-sm-12">
+            {% if (current_user.is_authenticated) and (groups is not none) %}
+                <div class="row">
+                    <div class="col-sm-3">
+                        <div style="width:200px;">
+                            <form action="." method="POST">
+                                <div name = "nextDiv">
+                                    <input type="text" class="form-control" name="from" placeholder="ID / Group:Section" />
+                                    <input type="text" class="form-control" name="to" placeholder="ID / Group:Section" />
+                                </div>
+
+                                <div name = "nextDiv">
+                                    <input type="submit" value="Switch">
+                                </div>
+                                {% if message is not none %}
+                                <div name>
+                                    <p>{{ message }}</p>
+                                </div>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <h4>Switch two students</h4>
+                        <p>Enter student ID of the two students to switch and submit.</p>
+                        <h4>Switch two groups</h4>
+                        <p>Enter Section:Group ID of two groups to switch and submit.</p>
+                    </div>
+                </div>
+        {% else %}
+            <div><p>Need to upload csv and click Create Groups in parameters tab.</p></div>
+        {% endif %}
                 <div name = "nextDiv">
                     <a href="../parameters" class="previous">&laquo; Previous</a>
                     <a href="../groups" class="next">Next &raquo;</a>
                 </div>
-
+        {% if (current_user.is_authenticated) and (groups is not none) %}
                 <table class="table">
                     <thead>
                         <tr>
@@ -80,7 +99,8 @@
                         {% endfor %}
                     </tbody>
                 </table>
-            </div>
         {% endif %}
+            </div>
+
     </body>
 </html>

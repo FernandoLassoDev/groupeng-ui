@@ -43,35 +43,48 @@
             </div>
         </nav>
 
+        <div class="col-sm-12">
         {% if (current_user.is_authenticated) and (tables is not none) %}
-            <div class="col-sm-12">
-                <div name = "nextDiv">
-                    <form action="." method="POST">
-                        <div class="slider">
-                            <input type="checkbox" name="slider" class="slider-checkbox" id="sliderSwitch" {% if by_section %} checked  {% endif %} >
-                            <label class="slider-label" for="sliderSwitch">
-                              <span class="slider-inner"></span>
-                              <span class="slider-circle"></span>
-                            </label>
-                         </div>
-                         <p><input type="submit" name = "render" value="Display tables" /></p>
-                    </form>
-                </div>
-
-                <div name = "nextDiv">
-                    <a href="../groups" class="previous">&laquo; Previous</a>
-                    <a href="../visualize" class="next">Next &raquo;</a>
-                </div>
-
-                <div>
-                {% for table in tables %}
-                    <div style="float: left;padding: 5px;">
-                        <p>{{ table[0] }}</p>
-                        {{ table[1]|safe }}
+            <div class="row">
+                <div class="col-sm-3">
+                    <div name = "nextDiv">
+                        <form action="." method="POST">
+                            <div class="slider">
+                                <input type="checkbox" name="slider" class="slider-checkbox" id="sliderSwitch" {% if by_section %} checked  {% endif %} >
+                                <label class="slider-label" for="sliderSwitch">
+                                  <span class="slider-inner"></span>
+                                  <span class="slider-circle"></span>
+                                </label>
+                             </div>
+                             <p><input type="submit" name = "render" value="Display tables" /></p>
+                        </form>
                     </div>
-                {% endfor %}
-
+                </div>
+                <div class="col-sm-9">
+                    <h4>Summary by group or by section</h4>
+                    <p>The tables show the percentage representation of each category either per group (section:group) or per section.
+                    <br>Only for balanced variables the mean and standard deviation are shown.</p>
+                    <p>The tables are colored by column.
+                    Thus, higher representations of a category have a darker color.</p>
+                </div>
             </div>
+        {% else %}
+            <div><p>Need to upload csv and click Create Groups in parameters tab.</p></div>
         {% endif %}
+            <div name = "nextDiv">
+                <a href="../groups" class="previous">&laquo; Previous</a>
+                <a href="../visualize" class="next">Next &raquo;</a>
+            </div>
+        {% if (current_user.is_authenticated) and (tables is not none) %}
+            <div>
+            {% for table in tables %}
+                <div style="float: left;padding: 5px;">
+                    <p>{{ table[0] }}</p>
+                    {{ table[1]|safe }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        </div>
+
     </body>
 </html>

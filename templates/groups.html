@@ -22,7 +22,6 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="">ESADE</a>
                     <ul class="nav navbar-nav">
                         <li><a href="../">Upload</a></li>
                         <li><a href="../parameters">Parameters</a></li>
@@ -45,25 +44,37 @@
             </div>
         </nav>
 
-        {% if (current_user.is_authenticated) and (tables is not none) %}
         <div class="col-sm-12">
-            <div name = "nextDiv">
-                <form action="." method="POST">
-                    <div class="slider">
-                        <input type="checkbox" name="slider" class="slider-checkbox" id="sliderSwitch" {% if by_section %} checked  {% endif %} >
-                        <label class="slider-label" for="sliderSwitch">
-                          <span class="slider-inner"></span>
-                          <span class="slider-circle"></span>
-                        </label>
-                     </div>
-                     <p><input type="submit" name = "render" value="Display tables" /></p>
-                </form>
+        {% if (current_user.is_authenticated) and (tables is not none) %}
+            <div class="row">
+                <div class="col-sm-3">
+                    <div name = "nextDiv">
+                        <form action="." method="POST">
+                            <div class="slider">
+                                <input type="checkbox" name="slider" class="slider-checkbox" id="sliderSwitch"
+                                {% if by_section %} checked  {% endif %} >
+                                <label class="slider-label" for="sliderSwitch">
+                                  <span class="slider-inner"></span>
+                                  <span class="slider-circle"></span>
+                                </label>
+                             </div>
+                             <p><input type="submit" name = "render" value="Display tables" /></p>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-sm-9">
+                    <h4>Observe student by group or by section </h4>
+                    <p>Use the toggle and display button to switch the view</p>
+                </div>
             </div>
+        {% else %}
+            <div><p>Need to upload csv and click Create Groups in parameters tab.</p></div>
+        {% endif %}
             <div name = "nextDiv">
                 <a href="../modify" class="previous">&laquo; Previous</a>
                 <a href="../summary" class="next">Next &raquo;</a>
             </div>
-
+        {% if (current_user.is_authenticated) and (tables is not none) %}
             <div>
             {% for table in tables %}
                 <div style="float: left;padding: 5px;">
@@ -71,8 +82,7 @@
                     {{ table[1]|safe }}
                 </div>
             {% endfor %}
-
-        </div>
         {% endif %}
+        </div>
     </body>
 </html>
