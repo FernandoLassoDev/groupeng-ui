@@ -54,10 +54,17 @@ class Student(object):
 
         self.data = data
         for key, val in self.data.items():
+            k = key if key is not None else "None"
+            v = val if val is not None else "None"
+            log.debug(k + " "+ v)
+
+        for key, val in self.data.items():
             if val in ['', '0']:
                 self.data[key] = None
             else:
                 self.data[key] = numberize(val)
+
+
 
         self.group = None
         self.headers = list(headers)

@@ -16,6 +16,8 @@
 # along with GroupEng.  If not, see <http://www.gnu.org/licenses/>.
 
 import math
+import logging
+log = logging.getLogger('log')
 from .errors import EmptyMean
 
 def mean(l, key = lambda x: x):
@@ -45,9 +47,10 @@ def numberize(n):
     if the string is a float return that float
     else return the string
     '''
-    if isinstance(n, (int, float)):
+    if isinstance(n, (int, float)) or (n is None):
         return n
     # except numbers that start with 0:
+    log.debug(n)
     if n[0] == '0':
         return n
     try:

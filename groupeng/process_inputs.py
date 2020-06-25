@@ -13,41 +13,37 @@ log.addHandler(fh)
 
 def process_csv(current_user):
 
-    try:
-        log.debug('run controller')
+    log.debug('run controller')
 
-        log.debug('allocate sections')
-        status, stat, sections = controller.run(current_user, None)
+    log.debug('allocate sections')
+    status, stat, sections = controller.run(current_user, None)
 
-        stats = []
-        students = {}
-        res = {}
+    stats = []
+    students = {}
+    res = {}
 
-        for stud in sections:
-            log.debug(stud)
-            sec = sections[stud]
-            if sec in res: res[sec].append(str(stud))
-            else: res[sec] = [str(stud)]
+    for stud in sections:
+        log.debug(stud)
+        sec = sections[stud]
+        if sec in res: res[sec].append(str(stud))
+        else: res[sec] = [str(stud)]
 
-        [{'section':sec, 'studentID':stud} for stud,sec in res.items()]
+    [{'section':sec, 'studentID':stud} for stud,sec in res.items()]
 
-        log.debug('allocate groups')
+    log.debug('allocate groups')
 
-        for count,sec in enumerate(res):
-             status_sec, stats_sec, students_sec = controller.run(current_user, res[sec])
-             status = status and status_sec
-             stats = stats + [stats_sec]
-             students[count] = students_sec
+    for count,sec in enumerate(res):
+         status_sec, stats_sec, students_sec = controller.run(current_user, res[sec])
+         status = status and status_sec
+         stats = stats + [stats_sec]
+         students[count] = students_sec
 
-        log.debug('ran groupeng')
+    log.debug('ran groupeng')
 
-        if status:
-            log.debug("GroupEng Run Succesful\n")
-        else:
-            log.debug("GroupEng Ran Correctly but not all rules could be met\n")
-    except Exception as e:
-        log.debug(str(e))
-
+    if status:
+        log.debug("GroupEng Run Succesful\n")
+    else:
+        log.debug("GroupEng Ran Correctly but not all rules could be met\n")
 
     return stats,students
 

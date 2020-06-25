@@ -44,7 +44,6 @@ def read_input(current_user, studentIds):
 
     rules = []
     for h in header_specs:
-        log.debug(h.header)
         if h.value == 'section_preference':
             if studentIds is None:
                 rule = {}

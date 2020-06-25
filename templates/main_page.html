@@ -43,6 +43,7 @@
         {% if current_user.is_authenticated %}
             <div class="col-sm-12">
                 <h4>Upload class CSV</h4>
+                <p>File must be comma seperated and have the student identifier in the first column. Limited to 1000 rows.</p>
                 <form method="post" action="." enctype="multipart/form-data">
                     <p><input type="file" name="students" /></p>
                     <p><input type="submit" name = "process" value="Process the file" /></p>

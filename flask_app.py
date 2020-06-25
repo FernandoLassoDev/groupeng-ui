@@ -14,13 +14,13 @@ from flask_migrate import Migrate
 from collections import OrderedDict
 import matplotlib
 matplotlib.use("Agg")
-import os.path
+import traceback
 from datetime import datetime
 import pytz
 import csv
 import json
-import logging
 from difflib import SequenceMatcher
+import logging
 log = logging.getLogger('log')
 
 from groupeng.process_inputs import process_csv
@@ -481,6 +481,9 @@ def upload_csv(delimiter = ","):
                     value = s[i+1],
                     manager = current_user
                     ))
+        if line>1000:
+            log.debug("Reached limit of 1000 students.")
+            break
     log.debug('upload new csv')
     db.session.add_all(students)
     db.session.commit()
@@ -494,73 +497,83 @@ def run_groupeng():
     Statistic.query.filter_by(manager=current_user).delete()
     GroupedStudents.query.filter_by(manager=current_user).delete()
 
-    stats,student_dic = process_csv(current_user)
+    try:
+        stats,student_dic = process_csv(current_user)
 
-    for sec, stat in enumerate(stats):
-        statistic = Statistic(manager = current_user,
-                                section = sec,
-                                output=stat)
-        db.session.add(statistic)
-        db.session.commit()
+        for sec, stat in enumerate(stats):
+            statistic = Statistic(manager = current_user,
+                                    section = sec,
+                                    output=stat)
+            db.session.add(statistic)
+            db.session.commit()
 
 
-    # Map sections in groupeng to actual sections based on preferences
-    sec_map = {}
-    pref_query = Specification.query.filter_by(manager=current_user)\
-                        .filter_by(value='section_preference').first()
-    if pref_query is None:
+        # Map sections in groupeng to actual sections based on preferences
+        sec_map = {}
+        #pref_query = Specification.query.filter_by(manager=current_user)\
+        #                    .filter_by(value='section_preference').first()
+        #if pref_query is None:
         for sec, groups in student_dic.iteritems():
             sec_map[sec] = sec +1
-    else:
-
-        students = pd.read_sql(
-            db.session.query(Classroom).\
-            filter(Classroom.manager == current_user).statement,
-            db.session.bind)
-
-        students = students.pivot(index='studentID',
-                                    columns='key', values='value')
-
-        pref_col = pref_query.header
-        identifier = 'studentID'
-
-        #check if we need to convert preference to integer
-        if not pd.to_numeric(
-                        students[pref_col], errors='coerce').notnull().all():
-
-            students.loc[:,pref_col] = [ord(sec_letter.lower()) - 96 for \
-                            sec_letter in students[pref_col].values.tolist()]
-
-        fr = {}
+        #else:
+    #
+        #    students = pd.read_sql(
+        #        db.session.query(Classroom).\
+        #        filter(Classroom.manager == current_user).statement,
+        #        db.session.bind)
+    #
+        #    students = students.pivot(index='studentID',
+        #                                columns='key', values='value')
+    #
+        #    pref_col = pref_query.header
+        #    identifier = 'studentID'
+    #
+        #    #check if we need to convert preference to integer
+        #    if not pd.to_numeric(
+        #                    students[pref_col], errors='coerce').notnull().all():
+    #
+        #        students.loc[:,pref_col] = [ord(sec_letter.lower()) - 96 for \
+        #                        sec_letter in students[pref_col].values.tolist()]
+    #
+        #    fr = {}
+    #
+        #    for sec, groups in student_dic.iteritems():
+        #        preferences = []
+        #        #loop through students and add their preference
+        #        for stud in groups:
+        #            preferences.append(int(students[students[identifier] == \
+        #                                    str(stud)][pref_col].values[0]))
+        #        fr[sec] = {x:preferences.count(x) for x in preferences}
+    #
+        #    #Make sure all section have mapping
+        #    for new_sec in range(len(student_dic)):
+        #        # per section, get amount of preferences for sec
+        #        f = [fr[x][new_sec+1] if (new_sec+1) in fr[x] else 0  for x in fr]
+        #        order = [i[0] for i in \
+        #                    sorted(enumerate(f), key=lambda x:x[1],reverse=True)]
+    #
+        #        for o in order:
+        #            if not (o in sec_map):
+        #                sec_map[o] = new_sec+1
+        #                break
 
         for sec, groups in student_dic.iteritems():
-            preferences = []
-            #loop through students and add their preference
-            for stud in groups:
-                preferences.append(int(students[students[identifier] == \
-                                        str(stud)][pref_col].values[0]))
-            fr[sec] = {x:preferences.count(x) for x in preferences}
-
-        #Make sure all section have mapping
-        for new_sec in range(len(student_dic)):
-            # per section, get amount of preferences for sec
-            f = [fr[x][new_sec+1] if (new_sec+1) in fr[x] else 0  for x in fr]
-            order = [i[0] for i in \
-                        sorted(enumerate(f), key=lambda x:x[1],reverse=True)]
-
-            for o in order:
-                if not (o in sec_map):
-                    sec_map[o] = new_sec+1
-                    break
-
-    for sec, groups in student_dic.iteritems():
-        for key, value in groups.iteritems():
-            new = GroupedStudents(manager = current_user,
-                                section=sec_map[sec],
-                                studentID=key,
-                                group = value)
-            db.session.add(new)
+            for key, value in groups.iteritems():
+                new = GroupedStudents(manager = current_user,
+                                    section=sec_map[sec],
+                                    studentID=key,
+                                    group = value)
+                db.session.add(new)
+                db.session.commit()
+    except:
+            e = traceback.format_exc()
+            statistic = Statistic(manager = current_user,
+                                    section = 1,
+                                    output="Something went wrong.\n\nDebug: "+e)
+            db.session.add(statistic)
             db.session.commit()
+            log.debug(e)
+
 
 
 def reset_defaults():
@@ -680,7 +693,13 @@ def create_tables(by_section = False, summary = False):
                     ("cluster","aggregate","distribute","balance"))).statement,
                     db.session.bind)
 
+    #Add specification columns
     columns = list(spec.header.unique())
+
+    #Add name columns
+    if not summary:
+        columns = [c for c in students.columns if "name" in c.lower()] + columns
+
     tables = []
     group_by = sectionCol if by_section else 'sec:group'
     if summary:
