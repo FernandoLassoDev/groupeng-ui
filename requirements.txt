@@ -3,7 +3,7 @@ alembic==1.4.1
 certifi==2019.11.28
 cffi==1.14.0
 click==7.1.1
-cryptography==2.8
+cryptography==3.2
 dnspython==1.16.0
 enum34==1.1.10
 Flask==1.1.1
