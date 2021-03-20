@@ -13,7 +13,7 @@ Flask-SQLAlchemy==2.4.1
 idna==2.9
 ipaddress==1.0.23
 itsdangerous==1.1.0
-Jinja2==2.11.1
+Jinja2==2.11.3
 Mako==1.1.2
 MarkupSafe==1.1.1
 mysql-connector-python==8.0.19
